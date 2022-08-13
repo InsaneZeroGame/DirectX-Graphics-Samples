@@ -347,6 +347,7 @@ uint32_t glTF::Asset::ReadTextureInfo( json& info_json, glTF::Texture* &info )
 
 void glTF::Asset::ProcessMaterials( json& materials )
 {
+    ASSERT(materials.size() != 0);
     m_materials.reserve(materials.size());
 
     uint32_t materialIdx = 0;

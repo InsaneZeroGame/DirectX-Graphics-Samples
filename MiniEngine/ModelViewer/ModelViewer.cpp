@@ -43,6 +43,12 @@ using namespace std;
 
 using Renderer::MeshSorter;
 
+
+typedef struct AssetLoadInfo
+{
+    std::wstring mFilePath = {};
+}AssetLoadInfo;
+
 class ModelViewer : public GameCore::IGameApp
 {
 public:
@@ -57,6 +63,7 @@ public:
 
     void RenderModel(const ModelInstance& Model,GraphicsContext& gfxContext, const D3D12_VIEWPORT& viewport, const D3D12_RECT& scissor);
 
+    void LoadModels();
 private:
 
     Camera m_Camera;
@@ -67,6 +74,8 @@ private:
 
     std::vector<ModelInstance> mModels;
     ShadowCamera m_SunShadowCamera;
+
+    std::vector<AssetLoadInfo> mModelInfos;
 };
 
 CREATE_APPLICATION( ModelViewer )
@@ -158,7 +167,7 @@ void ModelViewer::Startup( void )
     Renderer::Initialize();
 
     LoadIBLTextures();
-
+    LoadModels();
     std::wstring gltfFileName;
 
     bool forceRebuild = false;
@@ -166,37 +175,25 @@ void ModelViewer::Startup( void )
     if (CommandLineArgs::GetInteger(L"rebuild", rebuildValue))
         forceRebuild = rebuildValue != 0;
 
-    ModelInstance Model;
 
-    if (CommandLineArgs::GetString(L"model", gltfFileName) == false)
-    {
-#ifdef LEGACY_RENDERER
-        Sponza::Startup(m_Camera);
-#else
-        Model = Renderer::LoadModel(L"Sponza/PBR/sponza2.gltf", forceRebuild);
-        Model.Resize(100.0f * Model.GetRadius());
-        OrientedBox obb = Model.GetBoundingBox();
-        float modelRadius = Length(obb.GetDimensions()) * 0.5f;
-        const Vector3 eye = obb.GetCenter() + Vector3(modelRadius * 0.5f, 0.0f, 0.0f);
-        m_Camera.SetEyeAtUp( eye, Vector3(kZero), Vector3(kYUnitVector) );
-#endif
-    }
-    else
-    {
-        Model = Renderer::LoadModel(gltfFileName, forceRebuild);
-        Model.LoopAllAnimations();
-        Model.Resize(10.0f);
-
-        MotionBlur::Enable = false;
+    for (auto& LoadInfo : mModelInfos)
+    {   
+		ModelInstance Model;
+		Model = Renderer::LoadModel(LoadInfo.mFilePath, forceRebuild);
+		Model.Resize(100.0f * Model.GetRadius());
+		OrientedBox obb = Model.GetBoundingBox();
+		float modelRadius = Length(obb.GetDimensions()) * 0.5f;
+		const Vector3 eye = obb.GetCenter() + Vector3(modelRadius * 0.5f, 0.0f, 0.0f);
+		m_Camera.SetEyeAtUp(eye, Vector3(kZero), Vector3(kYUnitVector));
+		mModels.push_back(Model);
     }
 
     m_Camera.SetZRange(1.0f, 10000.0f);
     if (gltfFileName.size() == 0)
         m_CameraController.reset(new FlyingFPSCamera(m_Camera, Vector3(kYUnitVector)));
     else
-        m_CameraController.reset(new OrbitCamera(m_Camera, Model.GetBoundingSphere(), Vector3(kYUnitVector)));
+        m_CameraController.reset(new OrbitCamera(m_Camera, mModels[0].GetBoundingSphere(), Vector3(kYUnitVector)));
 
-    mModels.push_back(Model);
 }
 
 void ModelViewer::Cleanup( void )
@@ -276,8 +273,6 @@ void ModelViewer::RenderScene( void )
     {
 		RenderModel(model,gfxContext, viewport, scissor);
     }
-
-
 
     // Some systems generate a per-pixel velocity buffer to better track dynamic and skinned meshes.  Everything
     // is static in our scene, so we generate velocity from camera motion and the depth buffer.  A velocity buffer
@@ -384,4 +379,12 @@ void ModelViewer::RenderModel(const ModelInstance& Model, GraphicsContext& gfxCo
 			sorter.RenderMeshes(MeshSorter::kTransparent, gfxContext, globals);
 		}
 	}
+}
+
+void ModelViewer::LoadModels()
+{
+    mModelInfos = {
+        {L"D:\\Dev\\Assets\\Models\\Cube\\cube.gltf"},
+        {L"D:\\Dev\\Assets\\Models\\Sephere\\sphere.gltf"}
+    };
 }
