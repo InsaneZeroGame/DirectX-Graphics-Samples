@@ -18,7 +18,7 @@
 namespace GameCore
 {
     extern bool gIsSupending;
-
+    extern HWND g_hWnd;
     class IGameApp
     {
     public:

@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "Game.h"
-#include "../RendererCore/RendererCore.h"
+#include "../RenderAnimal/RenderAnimal.h"
 
 #define MAX_LOADSTRING 100
 
@@ -17,6 +17,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+HWND hWnd;
+RenderAnimal::Renderer* renderer;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -38,9 +40,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
-
-    RenderAnimal::RendererCore::GetInstance();
-	RenderAnimal::RendererCore::GetInstance();
+   
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
@@ -55,6 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         }
     }
+
+    delete renderer;
 
     return (int) msg.wParam;
 }
@@ -101,8 +103,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+   renderer = new RenderAnimal::Renderer;
+   renderer->InitTargetWindow(hWnd);
+   renderer->InitRenderer();
 
    if (!hWnd)
    {

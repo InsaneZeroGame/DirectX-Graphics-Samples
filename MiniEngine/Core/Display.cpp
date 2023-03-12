@@ -21,6 +21,8 @@
 #include "RootSignature.h"
 #include "ImageScaling.h"
 #include "TemporalEffects.h"
+#include "GameCore.h"
+
 
 #pragma comment(lib, "dxgi.lib") 
 
@@ -224,7 +226,7 @@ void Display::Resize(uint32_t width, uint32_t height)
 }
 
 // Initialize the DirectX resources required to run.
-void Display::Initialize(void)
+void Display::Initialize()
 {
     ASSERT(s_SwapChain1 == nullptr, "Graphics has already been initialized");
 

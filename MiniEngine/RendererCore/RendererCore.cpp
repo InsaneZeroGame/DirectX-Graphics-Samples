@@ -5,6 +5,7 @@
 #include "framework.h"
 #include "RendererCore.h"
 
+
 // TODO: This is an example of a library function
 void fnRendererCore()
 {

@@ -8,8 +8,8 @@ namespace RenderAnimal
 	class RendererCore final : public EngineCore::Singleton<RendererCore>
 	{
 	public:
-		~RendererCore() {};
-		RendererCore() {};
+		~RendererCore();
+		RendererCore();
 
 	private:
 

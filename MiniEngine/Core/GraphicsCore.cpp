@@ -412,6 +412,7 @@ void Graphics::Initialize(bool RequireDXRSupport)
     ParticleEffectManager::Initialize(3840, 2160);
 }
 
+
 void Graphics::Shutdown( void )
 {
     g_CommandManager.IdleGPU();
@@ -447,4 +448,9 @@ void Graphics::Shutdown( void )
         g_Device->Release();
         g_Device = nullptr;
     }
+}
+
+void Graphics::SetPhysicalWindow(HWND hwnd)
+{
+    GameCore::g_hWnd = hwnd;
 }

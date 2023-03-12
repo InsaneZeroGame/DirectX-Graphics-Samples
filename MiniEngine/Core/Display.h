@@ -17,7 +17,7 @@
 
 namespace Display
 {
-    void Initialize(void);
+    void Initialize();
     void Shutdown(void);
     void Resize(uint32_t width, uint32_t height);
     void Present(void);

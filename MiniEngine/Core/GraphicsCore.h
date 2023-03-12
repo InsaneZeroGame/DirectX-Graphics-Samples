@@ -31,6 +31,7 @@ namespace Graphics
 
     void Initialize(bool RequireDXRSupport=false);
     void Shutdown(void);
+    void SetPhysicalWindow(HWND hwnd);
 
     bool IsDeviceNvidia(ID3D12Device* pDevice);
     bool IsDeviceAMD(ID3D12Device* pDevice);
