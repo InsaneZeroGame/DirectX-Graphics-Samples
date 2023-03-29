@@ -1,8 +1,7 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
 
-#include <Windows.h>
 #include "../Core/Interface.h"
+#include <d3d12.h>
 
 
 namespace RenderAnimal
@@ -13,7 +12,7 @@ namespace RenderAnimal
 		Renderer();
 		~Renderer();
 
-		void InitTargetWindow(HWND hwnd);
+		void InitTargetWindow(HWND hwnd,UINT width,UINT height);
 
 		void InitRenderer();
 
@@ -21,6 +20,15 @@ namespace RenderAnimal
 		virtual void Tick(float ms) override;
 
 	private:
+		ID3D12GraphicsCommandList* mGraphicsCmd = nullptr;
+
+		ID3D12CommandAllocator* mGraphicsCmdAllocator = nullptr;
+
+		UINT mFrameWidth = 0;
+
+		UINT mFrameHeight = 0;
+
+		D3D12_RECT mFrameRect = {};
 	};
 }
 

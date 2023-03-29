@@ -60,8 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
     // Main message loop:
-
-    while (GameLoop())
+    GameLoop();
+    while (true)
     {
         PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -119,14 +119,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    // Create window
-   RECT rc = { 0, 0, (LONG)800, (LONG)600 };
+   UINT width = 800;
+   UINT height = 600;
+   RECT rc = { 0, 0, (LONG)width, (LONG)height };
    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
        rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInst, nullptr);
    
    renderer = new RenderAnimal::Renderer;
-   renderer->InitTargetWindow(hWnd);
+   renderer->InitTargetWindow(hWnd, width, height);
    renderer->InitRenderer();
 
    if (!hWnd)

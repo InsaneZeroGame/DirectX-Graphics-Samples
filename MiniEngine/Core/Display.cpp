@@ -15,7 +15,6 @@
 #include "Display.h"
 #include "GraphicsCore.h"
 #include "BufferManager.h"
-#include "ColorBuffer.h"
 #include "SystemTime.h"
 #include "CommandContext.h"
 #include "RootSignature.h"
@@ -51,7 +50,6 @@ namespace GameCore { extern HWND g_hWnd; }
 #include "CompiledShaders/GenerateMipsGammaOddXCS.h"
 #include "CompiledShaders/GenerateMipsGammaOddYCS.h"
 
-#define SWAP_CHAIN_BUFFER_COUNT 3
 
 DXGI_FORMAT SwapChainFormat = DXGI_FORMAT_R10G10B10A2_UNORM;
 

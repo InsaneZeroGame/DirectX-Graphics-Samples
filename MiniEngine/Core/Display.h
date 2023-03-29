@@ -14,6 +14,8 @@
 #pragma once
 
 #include <cstdint>
+#include "ColorBuffer.h"
+#define SWAP_CHAIN_BUFFER_COUNT 3
 
 namespace Display
 {
@@ -28,6 +30,7 @@ namespace Graphics
     extern uint32_t g_DisplayWidth;
     extern uint32_t g_DisplayHeight;
     extern bool g_bEnableHDROutput;
+    extern ColorBuffer g_DisplayPlane[SWAP_CHAIN_BUFFER_COUNT];
 
     // Returns the number of elapsed frames since application start
     uint64_t GetFrameCount(void);
