@@ -5,6 +5,10 @@
 #include "Game.h"
 #include "../RenderAnimal/RenderAnimal.h"
 
+
+#include <chrono>
+#include <iostream>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -19,6 +23,16 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 HWND hWnd;
 RenderAnimal::Renderer* renderer;
+auto lastTimeUpate = std::chrono::high_resolution_clock::now();
+
+bool GameLoop()
+{
+    auto now = std::chrono::high_resolution_clock::now();
+    auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTimeUpate);
+    renderer->Tick(delta.count());
+    lastTimeUpate = now;
+    return true;
+};
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -45,10 +59,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
     MSG msg;
-
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
+
+    while (GameLoop())
     {
+        PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
         {
             TranslateMessage(&msg);
@@ -103,9 +118,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   // Create window
+   RECT rc = { 0, 0, (LONG)800, (LONG)600 };
+   AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
+   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+       rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInst, nullptr);
+   
    renderer = new RenderAnimal::Renderer;
    renderer->InitTargetWindow(hWnd);
    renderer->InitRenderer();

@@ -2,9 +2,12 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
+#include "../Core/Interface.h"
+
+
 namespace RenderAnimal
 {
-	class Renderer
+	class Renderer : public Interface::Tickable
 	{
 	public:
 		Renderer();
@@ -14,8 +17,10 @@ namespace RenderAnimal
 
 		void InitRenderer();
 
-	private:
+		// Inherited via Tickable
+		virtual void Tick(float ms) override;
 
+	private:
 	};
 }
 

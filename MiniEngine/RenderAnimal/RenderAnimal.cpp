@@ -6,6 +6,7 @@
 #include "RenderAnimal.h"
 #include <Core/GraphicsCore.h>
 
+using namespace Utility;
 
 // TODO: This is an example of a library function
 void fnRenderAnimal()
@@ -30,4 +31,10 @@ void RenderAnimal::Renderer::InitTargetWindow(HWND hwnd)
 void RenderAnimal::Renderer::InitRenderer()
 {
 	Graphics::Initialize();
+}
+
+void RenderAnimal::Renderer::Tick(float ms)
+{
+	Printf("Tick delta : %f\n", ms);
+	Sleep(30);
 }

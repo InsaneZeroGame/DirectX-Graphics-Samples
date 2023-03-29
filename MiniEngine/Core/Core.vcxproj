@@ -91,6 +91,7 @@
     <ClInclude Include="GraphRenderer.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="ImageScaling.h" />
+    <ClInclude Include="Interface.h" />
     <ClInclude Include="LinearAllocator.h" />
     <ClInclude Include="Math\BoundingBox.h" />
     <ClInclude Include="Math\BoundingPlane.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="GraphicsCore.cpp" />
     <ClCompile Include="GraphRenderer.cpp" />
     <ClCompile Include="ImageScaling.cpp" />
+    <ClCompile Include="Interface.cpp" />
     <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="Math\BoundingSphere.cpp" />
     <ClCompile Include="Math\Frustum.cpp" />
