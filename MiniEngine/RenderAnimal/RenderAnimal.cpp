@@ -36,6 +36,7 @@ void RenderAnimal::Renderer::InitRenderer()
 {
 	Initialize();
 	g_CommandManager.CreateNewCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT, &mGraphicsCmd, &mGraphicsCmdAllocator);
+	mGraphicsCmd->Close();
 	Display::Resize(mFrameWidth, mFrameHeight);
 }
 
@@ -43,8 +44,25 @@ void RenderAnimal::Renderer::Tick(float ms)
 {
 	Printf("Tick delta : %f\n", ms);
 	float clearColor[4] = {0.0,1.0,0.0,1.0};
-	mGraphicsCmd->ClearRenderTargetView(g_DisplayPlane[GetFrameCount() % SWAP_CHAIN_BUFFER_COUNT].GetRTV(),clearColor,1,&mFrameRect);
-	ID3D12CommandList* lCmd[] = {mGraphicsCmd};
-	g_CommandManager.GetCommandQueue()->ExecuteCommandLists(1, lCmd);
-	Display::Present();
+	const auto [currentBackbuffer,bufferIndex] = Display::GetCurrentBackbuffer();
+	auto& graphicsCmdQueue = g_CommandManager.GetGraphicsQueue();
+	ID3D12CommandAllocator* lCurrentCmdAllocator = graphicsCmdQueue.RequestAllocator();
+
+	//Pre Render
+	{
+		mGraphicsCmd->Reset(lCurrentCmdAllocator, nullptr);
+	}
+	
+	//On Render
+
+	{
+		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
+	}
+	
+	//Post Render
+	{
+		auto fenceValue = graphicsCmdQueue.ExecuteCommandList(mGraphicsCmd);
+		Display::Present();
+		graphicsCmdQueue.DiscardAllocator(fenceValue, lCurrentCmdAllocator);
+	}
 }

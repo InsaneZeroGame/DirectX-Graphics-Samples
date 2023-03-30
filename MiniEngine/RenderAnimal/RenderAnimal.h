@@ -29,6 +29,7 @@ namespace RenderAnimal
 		UINT mFrameHeight = 0;
 
 		D3D12_RECT mFrameRect = {};
+
 	};
 }
 

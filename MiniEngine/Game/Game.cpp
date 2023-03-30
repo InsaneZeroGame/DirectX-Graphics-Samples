@@ -60,8 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
     // Main message loop:
-    GameLoop();
-    while (true)
+   ;
+    while (GameLoop())
     {
         PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))

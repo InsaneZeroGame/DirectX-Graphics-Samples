@@ -195,7 +195,6 @@ namespace Graphics
 void Display::Resize(uint32_t width, uint32_t height)
 {
     g_CommandManager.IdleGPU();
-
     g_DisplayWidth = width;
     g_DisplayHeight = height;
 
@@ -480,10 +479,10 @@ void Graphics::PreparePresentSDR(void)
 
 void Display::Present(void)
 {
-    if (g_bEnableHDROutput)
-        PreparePresentHDR();
-    else
-        PreparePresentSDR();
+    //if (g_bEnableHDROutput)
+    //    PreparePresentHDR();
+    //else
+    //    PreparePresentSDR();
 
     UINT PresentInterval = s_EnableVSync ? std::min(4, (int)Round(s_FrameTime * 60.0f)) : 0;
 
@@ -524,10 +523,16 @@ void Display::Present(void)
 
     ++s_FrameIndex;
 
-    TemporalEffects::Update((uint32_t)s_FrameIndex);
+    //TemporalEffects::Update((uint32_t)s_FrameIndex);
+    //
+    //SetNativeResolution();
+    //SetDisplayResolution();
+}
 
-    SetNativeResolution();
-    SetDisplayResolution();
+std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, int> Display::GetCurrentBackbuffer()
+{
+    IDXGISwapChain4* swapChain = (IDXGISwapChain4*)s_SwapChain1;
+    return { g_DisplayPlane[swapChain->GetCurrentBackBufferIndex()].GetRTV(), swapChain->GetCurrentBackBufferIndex()};
 }
 
 uint64_t Graphics::GetFrameCount(void)
