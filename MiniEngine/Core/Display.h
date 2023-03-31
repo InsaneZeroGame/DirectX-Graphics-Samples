@@ -24,7 +24,8 @@ namespace Display
     void Shutdown(void);
     void Resize(uint32_t width, uint32_t height);
     void Present(void); 
-    std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE,int> GetCurrentBackbuffer();
+    std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE,int> GetCurrentBackbufferHandle();
+    ColorBuffer* GetCurrentBackbuffer();
 
 }
 

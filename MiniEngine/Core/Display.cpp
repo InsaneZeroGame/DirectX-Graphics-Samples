@@ -529,10 +529,16 @@ void Display::Present(void)
     //SetDisplayResolution();
 }
 
-std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, int> Display::GetCurrentBackbuffer()
+std::tuple<D3D12_CPU_DESCRIPTOR_HANDLE, int> Display::GetCurrentBackbufferHandle()
 {
     IDXGISwapChain4* swapChain = (IDXGISwapChain4*)s_SwapChain1;
     return { g_DisplayPlane[swapChain->GetCurrentBackBufferIndex()].GetRTV(), swapChain->GetCurrentBackBufferIndex()};
+}
+
+ColorBuffer* Display::GetCurrentBackbuffer()
+{
+    IDXGISwapChain4* swapChain = (IDXGISwapChain4*)s_SwapChain1;
+    return &g_DisplayPlane[swapChain->GetCurrentBackBufferIndex()];
 }
 
 uint64_t Graphics::GetFrameCount(void)

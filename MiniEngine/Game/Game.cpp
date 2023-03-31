@@ -57,19 +57,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
+    MSG msg = {};
 
-    MSG msg;
-    // Main message loop:
-   ;
-    while (GameLoop())
+    do
     {
-        PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        bool done = false;
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            if (msg.message == WM_QUIT)
+                done = true;
         }
-    }
+
+        if (done)
+            break;
+    } while (GameLoop());	// Returns false to quit loop
 
     delete renderer;
 
