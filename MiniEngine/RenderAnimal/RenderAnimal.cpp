@@ -2,18 +2,18 @@
 //
 
 #include "pch.h"
-#include "framework.h"
 #include "RenderAnimal.h"
-#include "../Core/CommandListManager.h"
-#include "../Core/Display.h"
+#include <Core/CommandListManager.h>
+#include <Core/Display.h>
+#include <Core/Utility.h>
+#include <Core/GraphicsCore.h>
 #include "RenderConstants.h"
 
 using namespace Utility;
 using namespace Graphics;
-// TODO: This is an example of a library function
-void fnRenderAnimal()
-{
-}
+
+const UINT kCpuSize = 10 * 1024 * 1024;
+
 
 RenderAnimal::Renderer::Renderer()
 {
@@ -40,6 +40,10 @@ void RenderAnimal::Renderer::InitRenderer()
 	g_CommandManager.CreateNewCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT, &mGraphicsCmd, &mGraphicsCmdAllocator);
 	mGraphicsCmd->Close();
 	Display::Resize(mFrameWidth, mFrameHeight);
+	mCpuAllocator = std::make_unique<LinearAllocator>(kCpuWritable);
+	mCpuAllocator->Allocate(kCpuSize);
+	mGpuAllocator = std::make_unique<LinearAllocator>(kGpuExclusive);
+	mGpuAllocator->Allocate(kCpuSize);
 }
 
 void RenderAnimal::Renderer::Tick(float ms)
@@ -53,22 +57,27 @@ void RenderAnimal::Renderer::Tick(float ms)
 	//Pre Render
 	{
 		mGraphicsCmd->Reset(lCurrentCmdAllocator, nullptr);
+		//Present To RT
+		auto lPresentToRT = Constants::PRESENT_TO_RT;
+		lPresentToRT.Transition.pResource = Display::GetCurrentBackbuffer()->GetResource();
+		mGraphicsCmd->ResourceBarrier(1, &lPresentToRT);
+
 	}
 	
 	//On Render
 
 	{
-		auto lPresentToRT = Constants::PRESENT_TO_RT;
-		auto lRTToPresent = Constants::RT_TO_PRESENT;
-		lPresentToRT.Transition.pResource = Display::GetCurrentBackbuffer()->GetResource();
-		lRTToPresent.Transition.pResource = Display::GetCurrentBackbuffer()->GetResource();
-		mGraphicsCmd->ResourceBarrier(1, &lPresentToRT);
 		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
-		mGraphicsCmd->ResourceBarrier(1, &lRTToPresent);
 	}
 	
 	//Post Render
 	{
+		//RT To Present
+		auto lRTToPresent = Constants::RT_TO_PRESENT;
+		lRTToPresent.Transition.pResource = Display::GetCurrentBackbuffer()->GetResource();
+		mGraphicsCmd->ResourceBarrier(1, &lRTToPresent);
+
+		//Flush cmd and discard cmd allocator.
 		auto fenceValue = graphicsCmdQueue.ExecuteCommandList(mGraphicsCmd);
 		Display::Present();
 		graphicsCmdQueue.DiscardAllocator(fenceValue, lCurrentCmdAllocator);

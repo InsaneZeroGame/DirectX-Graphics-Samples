@@ -24,6 +24,7 @@ public:
         m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL),
         m_UsageState(D3D12_RESOURCE_STATE_COMMON),
         m_TransitioningState((D3D12_RESOURCE_STATES)-1)
+
     {
     }
 

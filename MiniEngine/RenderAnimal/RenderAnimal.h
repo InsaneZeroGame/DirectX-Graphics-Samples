@@ -1,6 +1,6 @@
 #pragma once
-
-#include "../Core/Interface.h"
+#include <Core/Interface.h>
+#include <Core/LinearAllocator.h>
 #include <d3d12.h>
 
 
@@ -30,6 +30,9 @@ namespace RenderAnimal
 
 		D3D12_RECT mFrameRect = {};
 
+		std::unique_ptr<LinearAllocator> mCpuAllocator = nullptr;
+
+		std::unique_ptr<LinearAllocator> mGpuAllocator = nullptr;
 	};
 }
 

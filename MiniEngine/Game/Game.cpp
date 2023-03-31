@@ -1,11 +1,9 @@
 // Game.cpp : Defines the entry point for the application.
 //
-
+#include "pch.h"
 #include "framework.h"
 #include "Game.h"
-#include "../RenderAnimal/RenderAnimal.h"
-
-
+#include <RenderAnimal/RenderAnimal.h>
 #include <chrono>
 #include <iostream>
 
