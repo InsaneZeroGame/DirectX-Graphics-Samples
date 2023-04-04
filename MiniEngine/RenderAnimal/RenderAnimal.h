@@ -34,6 +34,8 @@ namespace RenderAnimal
 
 		D3D12_RECT mFrameRect = {};
 
+		D3D12_VIEWPORT mViewPort = {};
+
 		std::unique_ptr<ByteAddressBuffer> mVertexBuffer = nullptr;
 
 		std::unique_ptr<ByteAddressBuffer> mIndexBuffer = nullptr;

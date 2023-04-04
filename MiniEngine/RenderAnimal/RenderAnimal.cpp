@@ -33,6 +33,7 @@ void RenderAnimal::Renderer::InitTargetWindow(HWND hwnd, UINT width, UINT height
 	mFrameHeight = height;
 	mFrameWidth = width;
 	mFrameRect = {0,0,(LONG)mFrameWidth,(LONG)mFrameHeight };
+	mViewPort = {0,0,(float)mFrameWidth,(float)mFrameHeight,0,1};
 }
 
 void RenderAnimal::Renderer::InitRenderer()
@@ -55,8 +56,9 @@ void RenderAnimal::Renderer::InitRenderer()
 		std::vector<Constants::Vertex> lVerteices =
 		{
 			{0.0,1.0,0.0,1.0},
-			{-1.0,0.0,0.0,1.0},
 			{1.0,0.0,0.0,1.0},
+			{-1.0,0.0,0.0,1.0},
+
 		};
 		auto verticesSize = sizeof(Constants::Vertex) * lVerteices.size();
 		memcpy(lUploadBufferPtr, lVerteices.data(), verticesSize);
@@ -109,7 +111,7 @@ void RenderAnimal::Renderer::InitPielineStates()
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R10G10B10A2_UNORM;
 	psoDesc.SampleDesc.Count = 1;	
 	Graphics::g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSimplePipelineState));
 }
@@ -137,6 +139,9 @@ void RenderAnimal::Renderer::Tick(float ms)
 		mGraphicsCmd->SetPipelineState(mSimplePipelineState);
 		mGraphicsCmd->SetGraphicsRootSignature(mSimpleRS);
 		mGraphicsCmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mGraphicsCmd->RSSetViewports(1, &mViewPort);
+		mGraphicsCmd->RSSetScissorRects(1, &mFrameRect);
+		mGraphicsCmd->OMSetRenderTargets(1, &currentBackbuffer, true, nullptr);
 		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
 		D3D12_VERTEX_BUFFER_VIEW vertexBuffers[] = { mVertexBuffer->VertexBufferView() };
 		mGraphicsCmd->IASetVertexBuffers(0, 1, vertexBuffers);
