@@ -1,6 +1,8 @@
 #pragma once
 #include <Core/Interface.h>
 #include <Core/LinearAllocator.h>
+#include <Core/GpuBuffer.h>
+#include <Core/UploadBuffer.h>
 #include <d3d12.h>
 
 
@@ -16,6 +18,8 @@ namespace RenderAnimal
 
 		void InitRenderer();
 
+		void InitPielineStates();
+
 		// Inherited via Tickable
 		virtual void Tick(float ms) override;
 
@@ -30,9 +34,15 @@ namespace RenderAnimal
 
 		D3D12_RECT mFrameRect = {};
 
-		std::unique_ptr<LinearAllocator> mCpuAllocator = nullptr;
+		std::unique_ptr<ByteAddressBuffer> mVertexBuffer = nullptr;
 
-		std::unique_ptr<LinearAllocator> mGpuAllocator = nullptr;
+		std::unique_ptr<ByteAddressBuffer> mIndexBuffer = nullptr;
+
+		std::unique_ptr<UploadBuffer> mUploadBuffer = nullptr;
+
+		ID3D12PipelineState* mSimplePipelineState = nullptr;
+
+		ID3D12RootSignature* mSimpleRS = nullptr;
 	};
 }
 

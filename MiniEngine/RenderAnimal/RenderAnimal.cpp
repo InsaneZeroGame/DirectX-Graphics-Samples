@@ -8,6 +8,7 @@
 #include <Core/Utility.h>
 #include <Core/GraphicsCore.h>
 #include "RenderConstants.h"
+#include <d3dcompiler.h>
 
 using namespace Utility;
 using namespace Graphics;
@@ -37,13 +38,80 @@ void RenderAnimal::Renderer::InitTargetWindow(HWND hwnd, UINT width, UINT height
 void RenderAnimal::Renderer::InitRenderer()
 {
 	Initialize();
+	InitPielineStates();
 	g_CommandManager.CreateNewCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT, &mGraphicsCmd, &mGraphicsCmdAllocator);
 	mGraphicsCmd->Close();
 	Display::Resize(mFrameWidth, mFrameHeight);
-	mCpuAllocator = std::make_unique<LinearAllocator>(kCpuWritable);
-	mCpuAllocator->Allocate(kCpuSize);
-	mGpuAllocator = std::make_unique<LinearAllocator>(kGpuExclusive);
-	mGpuAllocator->Allocate(kCpuSize);
+	mVertexBuffer = std::make_unique<ByteAddressBuffer>();
+	mVertexBuffer->Create(L"Vertex Buffer", Constants::VERTEX_COUNT, sizeof(Constants::Vertex),nullptr);
+	mUploadBuffer = std::make_unique<UploadBuffer>();
+	mUploadBuffer->Create(L"Upload Buffer", Constants::UPLOAD_BUFFER_SIZE);
+
+	//Upload
+	{
+		ID3D12CommandAllocator* lCmdAllocator = g_CommandManager.GetQueue().RequestAllocator();
+		mGraphicsCmd->Reset(lCmdAllocator, nullptr);
+		void* lUploadBufferPtr = mUploadBuffer->Map();
+		std::vector<Constants::Vertex> lVerteices =
+		{
+			{0.0,1.0,0.0,1.0},
+			{-1.0,0.0,0.0,1.0},
+			{1.0,0.0,0.0,1.0},
+		};
+		auto verticesSize = sizeof(Constants::Vertex) * lVerteices.size();
+		memcpy(lUploadBufferPtr, lVerteices.data(), verticesSize);
+		mUploadBuffer->Unmap();
+		mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, verticesSize);
+		auto copyFence = g_CommandManager.GetGraphicsQueue().ExecuteCommandList(mGraphicsCmd);
+		g_CommandManager.GetQueue().WaitForFence(copyFence);
+		g_CommandManager.GetQueue().DiscardAllocator(copyFence, lCmdAllocator);
+	}
+}
+
+void RenderAnimal::Renderer::InitPielineStates()
+{
+	ID3DBlob* pOutBlob;
+	ID3DBlob* pErrorBlob;
+	D3D12_ROOT_SIGNATURE_DESC lSimpleRS = {};
+	lSimpleRS.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	D3D12SerializeRootSignature(&lSimpleRS, D3D_ROOT_SIGNATURE_VERSION_1,
+		&pOutBlob, &pErrorBlob);
+	Graphics::g_Device->CreateRootSignature(1, pOutBlob->GetBufferPointer(), pOutBlob->GetBufferSize(),
+		MY_IID_PPV_ARGS(&mSimpleRS));
+	ComPtr<ID3DBlob> vertexShader;
+	ComPtr<ID3DBlob> pixelShader;
+
+#if defined(_DEBUG)
+	// Enable better shader debugging with the graphics debugging tools.
+	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	UINT compileFlags = 0;
+#endif
+
+	// Define the vertex input layout.
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	};
+
+	D3DCompileFromFile(Utility::GetAssetFullPath(L"SimpleVertexShader.hlsl").c_str(),nullptr,nullptr,"main", "vs_5_0", compileFlags, 0, &vertexShader, nullptr);
+	D3DCompileFromFile(Utility::GetAssetFullPath(L"SimplePixelShader.hlsl").c_str(), nullptr, nullptr, "main", "ps_5_0", compileFlags, 0, &pixelShader, nullptr);
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+	psoDesc.pRootSignature = mSimpleRS;
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthEnable = FALSE;
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.SampleDesc.Count = 1;	
+	Graphics::g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSimplePipelineState));
 }
 
 void RenderAnimal::Renderer::Tick(float ms)
@@ -56,7 +124,7 @@ void RenderAnimal::Renderer::Tick(float ms)
 
 	//Pre Render
 	{
-		mGraphicsCmd->Reset(lCurrentCmdAllocator, nullptr);
+		mGraphicsCmd->Reset(lCurrentCmdAllocator, mSimplePipelineState);
 		//Present To RT
 		auto lPresentToRT = Constants::PRESENT_TO_RT;
 		lPresentToRT.Transition.pResource = Display::GetCurrentBackbuffer()->GetResource();
@@ -65,9 +133,14 @@ void RenderAnimal::Renderer::Tick(float ms)
 	}
 	
 	//On Render
-
 	{
+		mGraphicsCmd->SetPipelineState(mSimplePipelineState);
+		mGraphicsCmd->SetGraphicsRootSignature(mSimpleRS);
+		mGraphicsCmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
+		D3D12_VERTEX_BUFFER_VIEW vertexBuffers[] = { mVertexBuffer->VertexBufferView() };
+		mGraphicsCmd->IASetVertexBuffers(0, 1, vertexBuffers);
+		mGraphicsCmd->DrawInstanced(3, 1, 0, 0);
 	}
 	
 	//Post Render

@@ -17,6 +17,10 @@
 
 namespace Utility
 {
+    
+
+    std::wstring GetAssetFullPath(LPCWSTR assetName);
+    
 #ifdef _CONSOLE
     inline void Print( const char* msg ) { printf("%s", msg); }
     inline void Print( const wchar_t* msg ) { wprintf(L"%ws", msg); }

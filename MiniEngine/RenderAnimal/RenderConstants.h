@@ -5,6 +5,14 @@
 
 namespace Constants
 {
+	struct Vertex
+	{
+		std::array<float, 4> pos;
+	};
+
+	const UINT VERTEX_COUNT = 1000000;
+	const UINT UPLOAD_BUFFER_SIZE = 10 * 1000 * 1000; //10Mb
+
 	D3D12_RESOURCE_BARRIER PRESENT_TO_RT;
 	D3D12_RESOURCE_BARRIER RT_TO_PRESENT;
 

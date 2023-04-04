@@ -29,7 +29,7 @@
 // Include <mcx.h> if you need this
 #define NOMCX
 
-// Include <winsvc.h> if you need this
+// Include <winsvc.h> if you need thisww
 #define NOSERVICE
 
 // WinHelp is deprecated
@@ -56,4 +56,5 @@
 #include <Core/EngineProfiling.h>
 #include <Core/Util/CommandLineArg.h>
 #include <memory>
+#include <array>
 #endif //PCH_H

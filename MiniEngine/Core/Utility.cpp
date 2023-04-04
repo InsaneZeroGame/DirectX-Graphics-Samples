@@ -16,6 +16,9 @@
 #include <string>
 #include <locale>
 
+#define BUFSIZE 4096
+
+
 // A faster version of memcopy that uses SSE instructions.  TODO:  Write an ARM variant if necessary.
 void SIMDMemCopy( void* __restrict _Dest, const void* __restrict _Source, size_t NumQuadwords )
 {
@@ -134,6 +137,37 @@ void SIMDMemFill( void* __restrict _Dest, __m128 FillVector, size_t NumQuadwords
     }
 
     _mm_sfence();
+}
+
+
+void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize)
+{
+    if (path == nullptr)
+    {
+        throw std::exception();
+    }
+
+    DWORD size = GetModuleFileName(nullptr, path, pathSize);
+    if (size == 0 || size == pathSize)
+    {
+        // Method failed or path was truncated.
+        throw std::exception();
+    }
+
+    WCHAR* lastSlash = wcsrchr(path, L'\\');
+    if (lastSlash)
+    {
+        *(lastSlash + 1) = L'\0';
+    }
+}
+
+std::wstring Utility::GetAssetFullPath(LPCWSTR assetName)
+{
+    {
+        WCHAR assetsPath[512];
+        GetAssetsPath(assetsPath, _countof(assetsPath));
+        return assetsPath + std::wstring(assetName);
+    }
 }
 
 std::wstring Utility::UTF8ToWideString( const std::string& str )

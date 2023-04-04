@@ -129,7 +129,7 @@
     <Lib>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>../../Packages/WinPixEventRuntime.1.0.210209001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../Packages/WinPixEventRuntime.1.0.210209001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies);d3dcompiler.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,6 +154,7 @@
     <Lib>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dcompiler.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -175,6 +176,20 @@
     <ProjectReference Include="..\Core\Core.vcxproj">
       <Project>{86a58508-0d6a-4786-a32f-01a301fdc6f3}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SimplePixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SimpleVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
