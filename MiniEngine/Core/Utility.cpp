@@ -165,8 +165,9 @@ std::wstring Utility::GetAssetFullPath(LPCWSTR assetName)
 {
     {
         WCHAR assetsPath[512];
+        //GetCurrentDirectory(512, assetsPath);
         GetAssetsPath(assetsPath, _countof(assetsPath));
-        return assetsPath + std::wstring(assetName);
+        return std::wstring(assetsPath) + L"../../../../../RenderAnimal/" + std::wstring(assetName);
     }
 }
 
