@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/Interface.h>
+#include <Core/System.h>
 #include <Core/LinearAllocator.h>
 #include <Core/GpuBuffer.h>
 #include <Core/UploadBuffer.h>
@@ -8,7 +9,7 @@
 
 namespace RenderAnimal
 {
-	class Renderer : public Interface::Tickable
+	class Renderer : public Interface::Tickable, public Interface::System
 	{
 	public:
 		Renderer();

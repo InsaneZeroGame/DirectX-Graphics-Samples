@@ -621,6 +621,7 @@
     <ClCompile Include="Utility.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface.h">
@@ -839,6 +840,7 @@
     <ClInclude Include="VectorMath.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\AoBlurAndUpsampleCS.hlsli">

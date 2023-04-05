@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "..\Game\Game.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderAnimal", "..\RenderAnimal\RenderAnimal.vcxproj", "{D6485090-F03B-4A92-95B0-84D255825EC3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GamePlay", "..\GamePlay\GamePlay.vcxproj", "{85AA35C8-8E12-40BF-B061-754E1A9F09E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Windows = Debug|Windows
@@ -116,6 +118,24 @@ Global
 		{D6485090-F03B-4A92-95B0-84D255825EC3}.Release|x64.Build.0 = Release|x64
 		{D6485090-F03B-4A92-95B0-84D255825EC3}.Release|x86.ActiveCfg = Release|Win32
 		{D6485090-F03B-4A92-95B0-84D255825EC3}.Release|x86.Build.0 = Release|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|Windows.ActiveCfg = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|Windows.Build.0 = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|x64.ActiveCfg = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|x64.Build.0 = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|x86.ActiveCfg = Debug|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Debug|x86.Build.0 = Debug|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|Windows.ActiveCfg = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|Windows.Build.0 = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|x64.ActiveCfg = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|x64.Build.0 = Debug|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|x86.ActiveCfg = Debug|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Profile|x86.Build.0 = Debug|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|Windows.ActiveCfg = Release|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|Windows.Build.0 = Release|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|x64.ActiveCfg = Release|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|x64.Build.0 = Release|x64
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|x86.ActiveCfg = Release|Win32
+		{85AA35C8-8E12-40BF-B061-754E1A9F09E5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
