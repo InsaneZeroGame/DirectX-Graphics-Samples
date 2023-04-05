@@ -166,6 +166,9 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GamePlay\GamePlay.vcxproj">
+      <Project>{85aa35c8-8e12-40bf-b061-754e1a9f09e5}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Model\Model.vcxproj">
       <Project>{5d3aeefb-8789-48e5-9bd9-09c667052d09}</Project>
     </ProjectReference>

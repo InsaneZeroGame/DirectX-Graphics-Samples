@@ -20,7 +20,7 @@ GamePlay::Director& GamePlay::Director::GetDirector()
 void GamePlay::Director::LoadLevel()
 {
 	Level OneLevel;
-
+	 
 
 	mLevels.push_back(OneLevel);
 }

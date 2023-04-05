@@ -9,6 +9,7 @@
 #include <Core/GraphicsCore.h>
 #include "RenderConstants.h"
 #include <d3dcompiler.h>
+#include <GamePlay/MeshComponent.h>
 
 using namespace Utility;
 using namespace Graphics;
@@ -53,15 +54,22 @@ void RenderAnimal::Renderer::InitRenderer()
 		ID3D12CommandAllocator* lCmdAllocator = g_CommandManager.GetQueue().RequestAllocator();
 		mGraphicsCmd->Reset(lCmdAllocator, nullptr);
 		void* lUploadBufferPtr = mUploadBuffer->Map();
-		std::vector<Constants::Vertex> lVerteices =
-		{
+
+		
+			
+		auto triangle = mRegistry.create();
+		auto& lComponent = mRegistry.emplace_or_replace<GamePlay::MeshComponent>(triangle);
+		lComponent.AddVertices({
 			{0.0,1.0,0.0,1.0},
 			{1.0,0.0,0.0,1.0},
 			{-1.0,0.0,0.0,1.0},
+			});
 
-		};
-		auto verticesSize = sizeof(Constants::Vertex) * lVerteices.size();
-		memcpy(lUploadBufferPtr, lVerteices.data(), verticesSize);
+		auto verticesSize = sizeof(Constants::Vertex) * lComponent.mVertices.size();
+		memcpy(lUploadBufferPtr, lComponent.mVertices.data(), verticesSize);
+		lComponent.mDrawCallParameters.StartVertexLocation = 0;
+		lComponent.mDrawCallParameters.VertexCountPerInstance = 3;
+
 		mUploadBuffer->Unmap();
 		mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, verticesSize);
 		auto copyFence = g_CommandManager.GetGraphicsQueue().ExecuteCommandList(mGraphicsCmd);
@@ -145,7 +153,17 @@ void RenderAnimal::Renderer::Tick(float ms)
 		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
 		D3D12_VERTEX_BUFFER_VIEW vertexBuffers[] = { mVertexBuffer->VertexBufferView() };
 		mGraphicsCmd->IASetVertexBuffers(0, 1, vertexBuffers);
-		mGraphicsCmd->DrawInstanced(3, 1, 0, 0);
+
+		auto renderable = mRegistry.view<GamePlay::MeshComponent>();
+		for (auto renderableEntity : renderable)
+		{
+			auto [meshComponent] = renderable.get(renderableEntity);
+			mGraphicsCmd->DrawInstanced(
+				meshComponent.mDrawCallParameters.VertexCountPerInstance,
+				1,
+				meshComponent.mDrawCallParameters.StartVertexLocation,
+				0);
+		}
 	}
 	
 	//Post Render
