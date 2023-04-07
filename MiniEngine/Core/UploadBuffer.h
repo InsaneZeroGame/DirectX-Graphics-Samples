@@ -19,6 +19,9 @@
 #pragma once
 
 #include "GpuResource.h"
+#include <GamePlay/MeshComponent.h>
+
+class GamePlay::MeshComponent;
 
 class UploadBuffer : public GpuResource
 {
@@ -32,7 +35,11 @@ public:
 
     size_t GetBufferSize() const { return m_BufferSize; }
 
+    void LoadMeshComponent(GamePlay::MeshComponent& InMesh);
+
 protected:
 
     size_t m_BufferSize;
+
+    UINT mVertexOffset = 0;
 };

@@ -53,18 +53,13 @@ void RenderAnimal::Renderer::InitRenderer()
 	{
 		ID3D12CommandAllocator* lCmdAllocator = g_CommandManager.GetQueue().RequestAllocator();
 		mGraphicsCmd->Reset(lCmdAllocator, nullptr);
-		void* lUploadBufferPtr = mUploadBuffer->Map();
 		auto renderable = mRegistry.view<GamePlay::MeshComponent>();
 		for (auto renderEntity : renderable)
 		{
 			auto& lComponent = renderable.get<GamePlay::MeshComponent>(renderEntity);
-			auto verticesSize = sizeof(Constants::Vertex) * lComponent.mVertices.size();
-			memcpy(lUploadBufferPtr, lComponent.mVertices.data(), verticesSize);
-			lComponent.mDrawCallParameters.StartVertexLocation = 0;
-			lComponent.mDrawCallParameters.VertexCountPerInstance = 3;
+			mUploadBuffer->LoadMeshComponent(lComponent);
 
-			mUploadBuffer->Unmap();
-			mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, verticesSize);
+			mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, mUploadBuffer->GetBufferSize());
 			auto copyFence = g_CommandManager.GetGraphicsQueue().ExecuteCommandList(mGraphicsCmd);
 			g_CommandManager.GetQueue().WaitForFence(copyFence);
 			g_CommandManager.GetQueue().DiscardAllocator(copyFence, lCmdAllocator);

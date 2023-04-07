@@ -69,3 +69,15 @@ void UploadBuffer::Unmap(size_t begin, size_t end)
 {
     m_pResource->Unmap(0, &CD3DX12_RANGE(begin, std::min(end, m_BufferSize)));
 }
+
+void UploadBuffer::LoadMeshComponent(GamePlay::MeshComponent& InMesh)
+{
+    void* lUploadBufferPtr = Map();
+    auto vertexCount = InMesh.mVertices.size();
+    auto verticesSize = sizeof(Constants::Vertex) * vertexCount;
+    memcpy(lUploadBufferPtr, InMesh.mVertices.data(), verticesSize);
+    InMesh.mDrawCallParameters.StartVertexLocation = mVertexOffset;
+    InMesh.mDrawCallParameters.VertexCountPerInstance = vertexCount;
+    Unmap();
+    mVertexOffset += vertexCount;
+}

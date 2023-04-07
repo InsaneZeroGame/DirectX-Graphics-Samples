@@ -21,5 +21,6 @@ namespace GamePlay
 			UINT VertexCountPerInstance;
 			UINT StartVertexLocation;
 		} mDrawCallParameters;
+
 	};
 }
