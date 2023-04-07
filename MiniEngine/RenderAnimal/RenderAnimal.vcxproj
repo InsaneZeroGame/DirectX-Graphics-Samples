@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Dev\DirectX-Graphics-Samples\MiniEngine\thirdparty\entt\single_include;$(SolutionDir)../</IncludePath>
+    <IncludePath>$(SolutionDir)../thirdparty\entt\single_include;$(SolutionDir)../</IncludePath>
     <LibraryPath>C:\Dev\DirectX-Graphics-Samples\Packages\WinPixEventRuntime.1.0.210209001\Include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Dev\DirectX-Graphics-Samples\MiniEngine\thirdparty\entt\single_include;$(SolutionDir)../</IncludePath>
+    <IncludePath>$(SolutionDir)../thirdparty\entt\single_include;$(SolutionDir)../</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

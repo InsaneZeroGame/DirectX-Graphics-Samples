@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "Game.h"
 #include <RenderAnimal/RenderAnimal.h>
+#include <GamePlay/Director.h>
 #include <chrono>
 #include <iostream>
 
@@ -129,9 +130,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
        rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInst, nullptr);
    
+   auto& director = GamePlay::Director::GetDirector();
+   director.LoadLevel();
+
    renderer = new RenderAnimal::Renderer;
    renderer->InitTargetWindow(hWnd, width, height);
    renderer->InitRenderer();
+
+   
 
    if (!hWnd)
    {

@@ -57,4 +57,5 @@
 #include <Core/Util/CommandLineArg.h>
 #include <memory>
 #include <array>
+#include <entt/entt.hpp>
 #endif //PCH_H

@@ -3,7 +3,12 @@
 
 GamePlay::Level::Level()
 {
-	
+	mAsset.meshInfo.vertices = {
+		{0.0,1.0,0.0,1.0},
+		{1.0,0.0,0.0,1.0},
+		{-1.0,0.0,0.0,1.0},
+		};
+
 }
 
 GamePlay::Level::~Level()
