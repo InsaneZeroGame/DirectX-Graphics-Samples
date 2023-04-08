@@ -9,6 +9,16 @@ GamePlay::Level::Level()
 		{-1.0,0.0,0.0,1.0},
 		};
 
+	mAsset1.meshInfo.vertices = {
+		{0.0,-1.0,0.0,1.0},
+		{-1.0,0.0,0.0,1.0},
+		{1.0,0.0,0.0,1.0},
+
+	};
+
+	mAsset1.meshInfo.indices = { 0,1,2 };
+	mAsset.meshInfo.indices = {0,1,2};
+
 }
 
 GamePlay::Level::~Level()

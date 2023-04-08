@@ -41,7 +41,10 @@ namespace RenderAnimal
 
 		std::unique_ptr<ByteAddressBuffer> mIndexBuffer = nullptr;
 
-		std::unique_ptr<UploadBuffer> mUploadBuffer = nullptr;
+		std::unique_ptr<VertexUploadBuffer> mUploadBuffer = nullptr;
+
+		std::unique_ptr<IndexUploadBuffer> mUploadBufferIndex = nullptr;
+
 
 		ID3D12PipelineState* mSimplePipelineState = nullptr;
 

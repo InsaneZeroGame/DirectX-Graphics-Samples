@@ -46,8 +46,15 @@ void RenderAnimal::Renderer::InitRenderer()
 	Display::Resize(mFrameWidth, mFrameHeight);
 	mVertexBuffer = std::make_unique<ByteAddressBuffer>();
 	mVertexBuffer->Create(L"Vertex Buffer", Constants::VERTEX_COUNT, sizeof(Constants::Vertex),nullptr);
-	mUploadBuffer = std::make_unique<UploadBuffer>();
+	
+	mIndexBuffer = std::make_unique<ByteAddressBuffer>();
+	mIndexBuffer->Create(L"Index Buffer", Constants::VERTEX_COUNT, sizeof(Constants::Vertex), nullptr);
+
+	mUploadBuffer = std::make_unique<VertexUploadBuffer>();
 	mUploadBuffer->Create(L"Upload Buffer", Constants::UPLOAD_BUFFER_SIZE);
+
+	mUploadBufferIndex = std::make_unique<IndexUploadBuffer>();
+	mUploadBufferIndex->Create(L"Upload Buffer", Constants::UPLOAD_BUFFER_SIZE);
 
 	//Upload
 	{
@@ -58,12 +65,16 @@ void RenderAnimal::Renderer::InitRenderer()
 		{
 			auto& lComponent = renderable.get<GamePlay::MeshComponent>(renderEntity);
 			mUploadBuffer->LoadMeshComponent(lComponent);
-
-			mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, mUploadBuffer->GetBufferSize());
-			auto copyFence = g_CommandManager.GetGraphicsQueue().ExecuteCommandList(mGraphicsCmd);
-			g_CommandManager.GetQueue().WaitForFence(copyFence);
-			g_CommandManager.GetQueue().DiscardAllocator(copyFence, lCmdAllocator);
+			mUploadBufferIndex->LoadMeshComponent(lComponent);
 		}
+		mGraphicsCmd->CopyBufferRegion(mVertexBuffer->GetResource(), 0, mUploadBuffer->GetResource(), 0, mUploadBuffer->GetBufferSize());
+		mGraphicsCmd->CopyBufferRegion(mIndexBuffer->GetResource(), 0, mUploadBufferIndex->GetResource(), 0, mUploadBufferIndex->GetBufferSize());
+		auto toIndex = Constants::TO_INDEX_BUFFER;
+		toIndex.Transition.pResource = mIndexBuffer->GetResource();
+		mGraphicsCmd->ResourceBarrier(1, &toIndex);
+		auto copyFence = g_CommandManager.GetGraphicsQueue().ExecuteCommandList(mGraphicsCmd);
+		g_CommandManager.GetQueue().WaitForFence(copyFence);
+		g_CommandManager.GetQueue().DiscardAllocator(copyFence, lCmdAllocator);
 	}
 }
 
@@ -142,15 +153,18 @@ void RenderAnimal::Renderer::Tick(float ms)
 		mGraphicsCmd->ClearRenderTargetView(currentBackbuffer, clearColor, 1, &mFrameRect);
 		D3D12_VERTEX_BUFFER_VIEW vertexBuffers[] = { mVertexBuffer->VertexBufferView() };
 		mGraphicsCmd->IASetVertexBuffers(0, 1, vertexBuffers);
+		D3D12_INDEX_BUFFER_VIEW indexBuffers[] = { mIndexBuffer->IndexBufferView()};
+		mGraphicsCmd->IASetIndexBuffer(indexBuffers);
 
 		auto renderable = mRegistry.view<GamePlay::MeshComponent>();
 		for (auto renderableEntity : renderable)
 		{
 			auto [meshComponent] = renderable.get(renderableEntity);
-			mGraphicsCmd->DrawInstanced(
-				meshComponent.mDrawCallParameters.VertexCountPerInstance,
+			mGraphicsCmd->DrawIndexedInstanced(
+				meshComponent.mDrawCallParameters.IndexCountPerInstance,
 				1,
-				meshComponent.mDrawCallParameters.StartVertexLocation,
+				meshComponent.mDrawCallParameters.StartIndexLocation,
+				meshComponent.mDrawCallParameters.BaseVertexLocation,
 				0);
 		}
 	}

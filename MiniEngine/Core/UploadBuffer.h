@@ -35,11 +35,37 @@ public:
 
     size_t GetBufferSize() const { return m_BufferSize; }
 
-    void LoadMeshComponent(GamePlay::MeshComponent& InMesh);
 
 protected:
 
     size_t m_BufferSize;
 
-    UINT mVertexOffset = 0;
 };
+
+
+class VertexUploadBuffer final: public UploadBuffer
+{
+public:
+    VertexUploadBuffer() {};
+    ~VertexUploadBuffer() {};
+    void LoadMeshComponent(GamePlay::MeshComponent& InMesh);
+
+private:
+    UINT mVertexOffset = 0;
+
+};
+
+
+class IndexUploadBuffer final : public UploadBuffer
+{
+public:
+    IndexUploadBuffer() {};
+    ~IndexUploadBuffer() {};
+
+    void LoadMeshComponent(GamePlay::MeshComponent& InMesh);
+
+private:
+    UINT mIndexOffset = 0;
+
+};
+

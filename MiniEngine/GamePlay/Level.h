@@ -18,8 +18,10 @@ namespace GamePlay
 			enum class entt::entity entity;
 			struct MeshInfo {
 				std::vector<Constants::Vertex> vertices;
+				std::vector<uint32_t> indices;
+
 			} meshInfo;
-		}mAsset;
+		}mAsset,mAsset1;
 
 	protected:
 		

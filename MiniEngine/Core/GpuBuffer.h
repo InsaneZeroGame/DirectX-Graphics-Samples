@@ -58,7 +58,7 @@ public:
     D3D12_INDEX_BUFFER_VIEW IndexBufferView(size_t StartIndex = 0) const
     {
         size_t Offset = StartIndex * m_ElementSize;
-        return IndexBufferView(Offset, (uint32_t)(m_BufferSize - Offset), m_ElementSize == 4);
+        return IndexBufferView(Offset, (uint32_t)(m_BufferSize - Offset), true);
     }
 
     size_t GetBufferSize() const { return m_BufferSize; }

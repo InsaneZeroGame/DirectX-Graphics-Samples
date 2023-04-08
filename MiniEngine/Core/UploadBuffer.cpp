@@ -70,14 +70,25 @@ void UploadBuffer::Unmap(size_t begin, size_t end)
     m_pResource->Unmap(0, &CD3DX12_RANGE(begin, std::min(end, m_BufferSize)));
 }
 
-void UploadBuffer::LoadMeshComponent(GamePlay::MeshComponent& InMesh)
+void VertexUploadBuffer::LoadMeshComponent(GamePlay::MeshComponent& InMesh)
 {
-    void* lUploadBufferPtr = Map();
+    uint8_t* lUploadBufferPtr = (uint8_t*)Map();
     auto vertexCount = InMesh.mVertices.size();
     auto verticesSize = sizeof(Constants::Vertex) * vertexCount;
-    memcpy(lUploadBufferPtr, InMesh.mVertices.data(), verticesSize);
-    InMesh.mDrawCallParameters.StartVertexLocation = mVertexOffset;
-    InMesh.mDrawCallParameters.VertexCountPerInstance = vertexCount;
+    memcpy(lUploadBufferPtr + mVertexOffset * sizeof(Constants::Vertex), InMesh.mVertices.data(), verticesSize);
+    InMesh.mDrawCallParameters.BaseVertexLocation = mVertexOffset;
     Unmap();
     mVertexOffset += vertexCount;
+}
+
+void IndexUploadBuffer::LoadMeshComponent(GamePlay::MeshComponent& InMesh)
+{
+    uint8_t* lUploadBufferPtr = (uint8_t*)Map();
+    auto indexCount = InMesh.mIndices.size();
+    auto indicesSize = sizeof(UINT) * indexCount;
+    memcpy(lUploadBufferPtr + mIndexOffset * sizeof(UINT), InMesh.mIndices.data(), indicesSize);
+    InMesh.mDrawCallParameters.StartIndexLocation = mIndexOffset;
+    InMesh.mDrawCallParameters.IndexCountPerInstance = indexCount;
+    Unmap();
+    mIndexOffset += indexCount;
 }
